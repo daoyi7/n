@@ -5,10 +5,10 @@ const cheerio = require('cheerio')
 const url = require('url');
 
 const app = express()
-const cnodeUrl = 'https://cnodejs.org/';
+const v2Url = 'https://www.v2ex.com/';
 
 app.get('/', (req, res, next) => {
-  superagent.get(cnodeUrl)
+  superagent.get(v2Url)
     .end((err, res) => {
       if(err) {
         return console.error(err)
@@ -17,10 +17,10 @@ app.get('/', (req, res, next) => {
       let topicUrls = []
       let $ = cheerio.load(res.text)
 
-      $('#topic_list .topic_title').each((index, ele) => {
+      $('#Main .item_title a').each((index, ele) => {
         const $ele = $(ele)
 
-        let href = url.resolve(cnodeUrl, $ele.attr('href'))
+        let href = url.resolve(v2Url, $ele.attr('href'))
 
         topicUrls.push(href)
       })
@@ -35,9 +35,9 @@ app.get('/', (req, res, next) => {
           let topicHtml = topicPair[1]
           let $ = cheerio.load(topicHtml)
           return ({
-            title: $('.topic_full_title').text().trim(),
             href: topicUrl,
-            comment1: $('.reply_content').eq(0).text().trim()
+            title: $('.header h1').text(),
+            comment1: $('.reply_content').eq(0).text()
           })
         })
 
